@@ -1,9 +1,5 @@
 from django.shortcuts import render
-
-from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, UpdateView
-)
-from .models import Category, Post
+from .models import Category
 from django.shortcuts import get_object_or_404
 from .utils import post_filter
 
