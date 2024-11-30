@@ -1,32 +1,31 @@
 from django.shortcuts import render
 
-from django.http import HttpResponseNotFound
-
-
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, UpdateView
+)
+from .models import Category, Post
+from django.shortcuts import get_object_or_404
+from .utils import post_filter
 
 
 def index(request):
     template_name = 'blog/index.html'
-    context = {'posts': reversed(posts)}
+    context = {'post_list': post_filter()[0:5]}
     return render(request, template_name, context)
 
 
 def category_posts(request, category_slug):
     template_name = 'blog/category.html'
-    context = {'category_slug': category_slug}
+    category = get_object_or_404(Category.objects.filter(is_published=True),
+                                 slug=category_slug)
+    post_list = post_filter().filter(category__title=category.title)
+    context = {'category': category, 'post_list': post_list}
+
     return render(request, template_name, context)
 
 
 def post_detail(request, id):
     template_name = 'blog/detail.html'
-    flag = False
-    current_position = -1
-    for i in posts:
-        current_position += 1
-        if i['id'] == id:
-            flag = True
-            break
-    if flag is not True:
-        return HttpResponseNotFound("404")
-    context = {'post': posts[current_position]}
+    post = get_object_or_404(post_filter(), pk=id)
+    context = {'post': post}
     return render(request, template_name, context)
